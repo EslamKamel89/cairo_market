@@ -4,7 +4,8 @@ use App\Livewire\Forms\LoginForm;
 use Illuminate\Support\Facades\Session;
 use Livewire\Attributes\Layout;
 use Livewire\Volt\Component;
-
+use App\Services\UserService;
+use App\Models\User;
 new #[Layout('layouts.guest')] class extends Component
 {
     public LoginForm $form;
@@ -19,8 +20,15 @@ new #[Layout('layouts.guest')] class extends Component
         $this->form->authenticate();
 
         Session::regenerate();
-
-        $this->redirectIntended(default: route('dashboard', absolute: false), navigate: true);
+        // $userRole =UserService::fromModel(auth()->user())->role;
+        $userRole =User::dto(auth()->user())->role;
+        if($userRole == 0){
+        $this->redirectIntended(default: route('admin', absolute: false), navigate: true);
+        } else if($userRole == 1){
+        $this->redirectIntended(default: route('vendor', absolute: false), navigate: true);
+        } else {
+            $this->redirectIntended(default: route('dashboard', absolute: false), navigate: true);
+        }
     }
 }; ?>
 
